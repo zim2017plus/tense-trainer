@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     CheckCircle2,
@@ -123,7 +123,8 @@ export default function TenseTrainerMVP() {
     const [battleIndex, setBattleIndex] = useState(0);
     const [battleDone, setBattleDone] = useState(false);
     const [buildIndex, setBuildIndex] = useState(0);
-
+    const practiceCardRef = useRef<HTMLDivElement | null>(null);
+    const buildCardRef = useRef<HTMLDivElement | null>(null);
     const practiceQuestions = useMemo(() => questionBank[selectedTense], [selectedTense]);
     const currentQuestion = practiceQuestions[questionIndex];
     const battleQuestion = battleDeck[battleIndex];
@@ -165,6 +166,23 @@ export default function TenseTrainerMVP() {
         }
     }, [hydrated, mode, selectedTense, stats, statsByTense]);
 
+    const scrollToPracticeCard = () => {
+        setTimeout(() => {
+            practiceCardRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 120);
+    };
+
+    const scrollToBuildCard = () => {
+        setTimeout(() => {
+            buildCardRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 120);
+    };
     const resetInput = () => {
         setSelectedOption("");
         setWrittenAnswer("");
@@ -373,6 +391,7 @@ export default function TenseTrainerMVP() {
                                                 setSelectedTense(key as TenseKey);
                                                 setQuestionIndex(0);
                                                 resetInput();
+                                                scrollToPracticeCard();
                                             }}
                                             className={`w-full rounded-2xl border p-4 text-left transition ${selectedTense === key
                                                 ? "border-slate-900 bg-slate-900 text-white"
@@ -394,6 +413,7 @@ export default function TenseTrainerMVP() {
 
                         <AnimatePresence mode="wait">
                             <motion.div
+                                ref={practiceCardRef}
                                 key={`${selectedTense}-${questionIndex}`}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -607,6 +627,7 @@ export default function TenseTrainerMVP() {
                                                 setSelectedTense(key as TenseKey);
                                                 setBuildIndex(0);
                                                 resetInput();
+                                                scrollToBuildCard();
                                             }}
                                             className={`w-full rounded-2xl border p-4 text-left transition ${selectedTense === key
                                                 ? "border-slate-900 bg-slate-900 text-white"
@@ -628,6 +649,7 @@ export default function TenseTrainerMVP() {
 
                         <AnimatePresence mode="wait">
                             <motion.div
+                                ref={buildCardRef}
                                 key={`${selectedTense}-build-${buildIndex}`}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -774,15 +796,7 @@ export default function TenseTrainerMVP() {
 
                         <Card>
                             <div className="p-6">
-                                <h2 className="text-xl font-semibold">Nâng cấp tiếp theo nên làm</h2>
-                                <div className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
-                                    <p>1. Thêm nhiều câu hơn bằng file data riêng.</p>
-                                    <p>2. Thêm mode Build Sentence từ keyword.</p>
-                                    <p>3. Lưu riêng tiến độ theo từng thì.</p>
-                                    <p>4. Thêm timer thật cho reaction mode.</p>
-                                    <p>5. Tách câu theo level: easy / medium / hard.</p>
-                                    <p>6. Deploy lên Vercel cho bạn của bạn dùng luôn.</p>
-                                </div>
+
                             </div>
                         </Card>
                     </div>
